@@ -1,6 +1,6 @@
 import RaceList from "@/app/admin/race_list"
 import { Race } from "@/models/races"
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { cookies } from "next/headers";
 import Link from "next/link"
 

@@ -44,7 +44,7 @@ const RaceInputForm: React.FC = () => {
         } else {
           setFileError('Файл не прошёл валидацию');
         }
-      } catch (error) {
+      } catch {
         setFileError('Произошла ошибка при валидации файла');
       }
     }
