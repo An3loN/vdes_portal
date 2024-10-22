@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* 
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #252525;
+    --foreground: #ededed;
+  }
+} */
+
+:root {
+  --background: #111827;
+  --foreground: #ededed;
+  --panel_color: #1f2937;
+  --panel_color_hover: #151c26;
+  --secondary_text_color: #909195;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.secondory-text-color {
+  color: var(--secondary_text_color);
+}
+
+.color-panel {
+  background: var(--panel_color);
+}
+
+.color-panel-hover:hover {
+  background-color: var(--panel_color_hover);
+}
+
+.min-w-base {
+  min-width: 42rem;
+}
+
+.max-w-base {
+  max-width: 42rem;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

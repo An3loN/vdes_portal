@@ -1,0 +1,2 @@
+compile:
+	poetry export --without-hashes > ./requirements.txt
