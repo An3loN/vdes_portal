@@ -43,8 +43,5 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
-    volumes:
-      - ./media/:/app/media/
-    tty: true
-    command: npm run build
+      dockerfile: prod.Dockerfile
+    restart: always

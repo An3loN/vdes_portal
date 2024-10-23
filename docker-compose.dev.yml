@@ -44,7 +44,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
+      dockerfile: ./dev.Dockerfile
     volumes:
       - ./frontend:/app
       - ./media/:/app/media/
