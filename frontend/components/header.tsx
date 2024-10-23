@@ -12,7 +12,7 @@ const Header: React.FC<{user_auth:UserAuth}> = ({user_auth}) => {
   const handleSteamLogin = async () => {
     try {
       // Запрос на бэкенд для редиректа к Steam OpenID
-      const response = await axios.get('/api/auth/steam/?initial_url=' + window.location.pathname, {
+      const response = await axios.get('/api/auth/steam/?initial_url=' + window.location.href, {
         withCredentials: true,
        });
        const data = JSON.parse(response.data)
