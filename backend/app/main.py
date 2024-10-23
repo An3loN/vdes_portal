@@ -58,7 +58,7 @@ async def log_users():
 @app.get('/api/auth/steam/')
 async def steam_login(initial_url: str = '/'):
     steamLogin = SteamSignIn()
-    return json.dumps({'redirect_url':steamLogin.ConstructURL('http://localhost:3000/api/auth/steam/processlogin/?initial_url=' + initial_url)})
+    return json.dumps({'redirect_url':steamLogin.ConstructURL(settings.HOST_URL + '/api/auth/steam/processlogin/?initial_url=' + initial_url)})
 
 @app.get('/api/auth/steam/processlogin/')
 async def process(request: Request):

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     TIMEZONE: timezone = timezone(offset=timedelta(hours=3), name='Europe/Moscow')
 
     REDIS_URL: str = 'redis://localhost:6379'
+    HOST_URL: str
     ADMINS: list[str]
     CRYPTO_PASS: str
     STEAM_WEB_API_KEY: str
