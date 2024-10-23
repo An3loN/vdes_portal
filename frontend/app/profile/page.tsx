@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Header from "@/components/header";
 import { get_user_auth } from "@/utils/api";
 import UserProfileForm from "./user_data_form";
-import ReturnLink from "@/components/main_page_link";
 
 
 export default async function Page() {

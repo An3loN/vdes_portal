@@ -1,5 +1,5 @@
 'use client';
-import { ParsedRace, Race } from "@/models/races";
+import { ParsedRace } from "@/models/races";
 import { formatDate } from "@/utils/date_formats";
 import { useRouter } from 'next/navigation'
 

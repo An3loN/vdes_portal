@@ -2,7 +2,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import axios from 'axios';
-import { cookies } from 'next/headers';
 import { UserAuth } from '@/models/auth';
 // import { AuthContext } from '@/app/layout';
 

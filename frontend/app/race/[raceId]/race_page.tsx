@@ -1,5 +1,5 @@
 'use client'
-import { get_allowed_classes, get_reserved_numbers, ParsedRace, Race } from "@/models/races";
+import { get_allowed_classes, get_reserved_numbers, ParsedRace } from "@/models/races";
 import React, { useState, useEffect } from 'react';
 import ToggleableList from "./car_dropdown";
 import ModalForm from "./race_register_form";

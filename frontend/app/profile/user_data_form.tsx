@@ -34,9 +34,11 @@ const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
       const response = await axios.post('/api/user', { firstName, lastName });
 
       // Если успешно
-      setSuccessMessage('Данные успешно сохранены!');
-      setErrorMessage('');
-    } catch (error) {
+      if(response.status == 200){
+        setSuccessMessage('Данные успешно сохранены!');
+        setErrorMessage('');
+      }
+    } catch {
       setErrorMessage('Ошибка при сохранении данных.');
       setSuccessMessage('');
     }

@@ -4,7 +4,6 @@ import { Bars3Icon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation'
 import { Race } from '@/models/races';
 import { formatDate } from '@/utils/date_formats';
-import { revalidateTag } from 'next/cache';
 
 type RaceList = {
   races: Race[]

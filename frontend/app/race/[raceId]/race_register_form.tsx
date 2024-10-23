@@ -1,5 +1,5 @@
 'use client';
-import { CarClass, Race, Registration } from '@/models/races';
+import { CarClass, Registration } from '@/models/races';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
@@ -136,7 +136,3 @@ const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, closeModal, reserve
 };
 
 export default ModalForm;
-function userRouter(): any {
-  throw new Error('Function not implemented.');
-}
-

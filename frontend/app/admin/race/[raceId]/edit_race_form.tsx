@@ -31,7 +31,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
   };
   
 
-  const handleDelete = async (e: React.FormEvent) => {
+  const handleDelete = async () => {
     try {
       await fetch(edit_url, {
         method: 'POST',
@@ -213,17 +213,3 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
 };
 
 export default EditForm;
-
-function pretty_stringify(obj_from_json: any): string {
-  if (typeof obj_from_json !== "object" || Array.isArray(obj_from_json)){
-      // not an object, stringify using native function
-      return JSON.stringify(obj_from_json);
-  }
-  // Implements recursive object serialization according to JSON spec
-  // but without quotes around the keys.
-  let props = Object
-      .keys(obj_from_json)
-      .map(key => `${key}:${pretty_stringify(obj_from_json[key])}`)
-      .join(",");
-  return `{${props}}`;
-}

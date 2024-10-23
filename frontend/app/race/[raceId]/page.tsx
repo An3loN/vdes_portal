@@ -1,5 +1,5 @@
 import { parseRace, Race } from "@/models/races";
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { RacePage } from "./race_page";
 import Header from "@/components/header";
 import axios from "axios";
