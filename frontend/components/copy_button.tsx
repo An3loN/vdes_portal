@@ -6,6 +6,12 @@ interface CopyButtonProps {
     error?: string;
 }
 
+const copyToClipboard = async (content: string) => {
+    if (window.isSecureContext && navigator.clipboard) {
+      await navigator.clipboard.writeText(content);
+    }
+  };
+
 const CopyButton: React.FC<CopyButtonProps> = ({ buttonText, getTextToCopy, error }) => {
     const [statusText, setStatusText] = useState('');
     
@@ -20,7 +26,8 @@ const CopyButton: React.FC<CopyButtonProps> = ({ buttonText, getTextToCopy, erro
                 setStatusTextMiliseconds(error, 2000);
                 return
             }
-            await navigator.clipboard.writeText(await getTextToCopy());
+            
+            await copyToClipboard(await getTextToCopy());
             setStatusTextMiliseconds('Текст успешно скопирован!', 2000);
         } catch (error) {
             console.error('Ошибка при копировании текста:', error);
