@@ -247,7 +247,7 @@ def _is_undefined(string: str) -> bool:
     return string == 'undefined'
 
 @app.get("/api/is_admin")
-def is_user_admin(login: str | None = Cookie(None), decrypt = True):
+def is_user_admin_api(login: str | None = Cookie(None), decrypt = True):
     if not login or _is_undefined(login):
         return {'is_admin': False}
     steamid = cryptocode.decrypt(login, settings.CRYPTO_PASS) if decrypt else login
