@@ -79,7 +79,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
 
   const handleEntryListGeneration = async (): Promise<string> => {
     try {
-      const response = await fetch(generate_entry_list_url + prop.race.id);
+      const response = await fetch(window.location.host + generate_entry_list_url + prop.race.id);
 
       if (response.ok) {
         const data = await response.text();
