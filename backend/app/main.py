@@ -22,6 +22,7 @@ import cryptocode
 from app.entry_list import EntryList
 
 REFRESH_STEAM_DATA_SEDONDS = 3600 * 24
+STEAM_LOGIN_COOKIE_AGE = 31536000
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
 STEAM_USER_INFO_URL = f'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={settings.STEAM_WEB_API_KEY}&steamids='
@@ -71,7 +72,7 @@ async def process(request: Request):
     redirect_to = request.query_params['initial_url'] if await is_user_registered(steam_id, decrypt=False) else '/profile'
     await users_namespace.save_user(User(steamid=steam_id, steam_name=user_info.personaname))
     response = RedirectResponse(redirect_to)
-    response.set_cookie(key='login', value=cryptocode.encrypt(steam_id, settings.CRYPTO_PASS))
+    response.set_cookie(key='login', value=cryptocode.encrypt(steam_id, settings.CRYPTO_PASS), max_age=STEAM_LOGIN_COOKIE_AGE)
     response.set_cookie(key='refresh', max_age=REFRESH_STEAM_DATA_SEDONDS)
     return response
 
