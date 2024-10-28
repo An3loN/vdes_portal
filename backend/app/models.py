@@ -93,11 +93,11 @@ class SteamUserData(BaseModel):
     avatarmedium: str
     avatarfull: str
     avatarhash: str
-    lastlogoff: Optional[int]
-    personastate: Optional[int]
-    primaryclanid: Optional[str]
-    timecreated: Optional[int]
-    personastateflags: Optional[int]
+    lastlogoff: Optional[int] = Field(default=None)
+    personastate: Optional[int] = Field(default=None)
+    primaryclanid: Optional[str] = Field(default=None)
+    timecreated: Optional[int] = Field(default=None)
+    personastateflags: Optional[int] = Field(default=None)
 
 class User(BaseModel):
     steamid: str

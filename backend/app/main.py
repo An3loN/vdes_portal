@@ -256,6 +256,7 @@ async def get_user_info(steam_id: str) -> SteamUserData:
     async with httpx.AsyncClient() as client:
         response = await client.get(STEAM_USER_INFO_URL + steam_id)
         all_users = response.json()
+        print(**all_users['response']['players'][0])
         user_info = SteamUserData(**all_users['response']['players'][0])
         return user_info
 
