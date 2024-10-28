@@ -1,7 +1,7 @@
 'use client';
 import { Race } from '@/models/races';
 import React, { useState } from 'react';
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { inputToUnix, unixToInput } from '@/utils/date_formats';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import CopyButton from '@/components/copy_button';
