@@ -5,6 +5,8 @@ import ToggleableList from "./car_dropdown";
 import ModalForm from "./race_register_form";
 import { UserAuth } from "@/models/auth";
 import { RaceDescription } from "./description";
+import { RaceResults } from "./results";
+import { RaceDrivers } from "./drivers";
 
 const race_register_url = '/api/race/register';
 
@@ -51,7 +53,7 @@ interface RacePageProps {
         const result = await response.json() as {message?: string};
         console.log(result.message);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         return false;
       }
       return true;
@@ -94,6 +96,20 @@ interface RacePageProps {
             {
               activeTab == 'description' && 
               <RaceDescription race={race} user_auth={user_auth} toggleModal={toggleModal}/>
+            }
+            {
+              (activeTab == 'drivers') && (
+                <RaceDrivers registrations={race.registrations}/>
+              ) 
+            }
+            {
+              (activeTab == 'results') && (
+                race.results ? (
+                  <RaceResults results={race.results}/>
+                ) : (
+                  <p>Результаты будут доступны в ближайшее время</p>
+                )
+              ) 
             }
 
           </div>

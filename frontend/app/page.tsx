@@ -20,7 +20,6 @@ export default async function Page() {
   } catch (error) {
     console.error('Ошибка при получении списка гонок:', error);
   }
-  console.log(parsed_races)
   return (
     <div>
       <Header user_auth={user_auth}/>

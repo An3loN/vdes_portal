@@ -98,7 +98,7 @@ class Results(BaseModel):
 
     @classmethod
     def from_result_input(cls, results_input: ResultsInput) -> Self:
-        results_unsorted = [ResultRow(
+        results = [ResultRow(
             user=UserRowData(
                 steamid=player_id_to_steam_id(leaderboard_line.currentDriver.playerId),
                 name=leaderboard_line.currentDriver.firstName,
@@ -111,7 +111,8 @@ class Results(BaseModel):
             lap_count=leaderboard_line.timing.lapCount,
             best_lap=leaderboard_line.timing.bestLap,
         ) for leaderboard_line in results_input.sessionResult.leaderBoardLines]
-        results_sorted = sorted(results_unsorted, key=attrgetter('lap_count', 'total_time', 'best_lap'))
-        for i, _ in enumerate(results_sorted):
-            results_sorted[i].place = i + 1
-        return Results(rows={result.user.steamid:result for result in results_sorted})
+        results.sort(key=attrgetter('total_time'))
+        results.sort(key=attrgetter('lap_count'), reverse=True)
+        for i, _ in enumerate(results):
+            results[i].place = i + 1
+        return Results(rows={result.user.steamid:result for result in results})

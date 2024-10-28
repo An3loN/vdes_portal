@@ -8,11 +8,9 @@ import { UserAuth } from '@/models/auth';
 const steam_login_url = 'https://steamcommunity.com/openid/login?';
 
 const Header: React.FC<{user_auth:UserAuth}> = ({user_auth}) => {
-  console.log('from header: ', user_auth);
   const handleSteamLogin = async () => {
     try {
       // Запрос на бэкенд для редиректа к Steam OpenID
-      console.log(window.location.href);
       const response = await axios.get('/api/auth/steam/?initial_url=' + window.location.href, {
         withCredentials: true,
        });

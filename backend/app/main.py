@@ -10,15 +10,16 @@ from pydantic import TypeAdapter
 
 from app.config import settings
 from app.redis_interface.races_namespace import RacesNameSpace
-from app.models import CarClass, RaceData, RaceDataOverwrite, RaceRegistration, SteamUserData, User, UserAuth
+from app.models import CarClass, PublicRaceData, RaceData, RaceDataOverwrite, RaceRegistration, SteamUserData, User, UserAuth
 
 from fastapi import FastAPI, Request, HTTPException
 from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.redis_interface.users_namespace import UsersNameSpace
 import cryptocode
+import re
 
+from app.redis_interface.users_namespace import UsersNameSpace
 from app.entry_list import EntryList
 from app.race_results.models import Results, ResultsInput
 
@@ -29,12 +30,13 @@ STEAM_OPENID_URL = "https://steamcommunity.com/openid"
 STEAM_USER_INFO_URL = f'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={settings.STEAM_WEB_API_KEY}&steamids='
 RACE_IMAGES_PATH = '/media/race_images/'
 
-
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=settings.STEAM_WEB_API_KEY)
 
 races_namespace = RacesNameSpace(settings.REDIS_URL, 'races')
 users_namespace = UsersNameSpace(settings.REDIS_URL, 'users')
+
+latin_regexp = re.compile("^[a-zA-Z]+$")
 
 async def refresh_user(steam_id: str):
     if not await users_namespace.has_user(steam_id):
@@ -85,6 +87,9 @@ async def save_user_data(request: Request, login: str | None = Cookie(None)):
 
     if not first_name or not last_name:
         raise HTTPException(status_code=400, detail="Имя и Фамилия обязательны.")
+    
+    if not latin_regexp.match(first_name) or not latin_regexp.match(last_name):
+        raise HTTPException(status_code=400, detail="Имя и Фамилия должны быть на латинице.")
     
     await authorized_assert(login)
     steam_id = cryptocode.decrypt(login, settings.CRYPTO_PASS)
@@ -236,13 +241,16 @@ async def get_race(race_id: str, login: str | None = Cookie(None)):
 @app.get("/api/race/get/{race_id}")
 async def get_race(race_id: str, login: str | None = Cookie(None)):
     race = await races_namespace.get_race(race_id)
-    return race.model_dump_json()
+    public_race = await PublicRaceData.from_race_data(race, users_namespace.get_user)
+    return public_race.model_dump_json()
 
 @app.get("/api/race/get_list")
 async def get_race_list():
     races = await races_namespace.get_races()
-    ta = TypeAdapter(list[RaceData])
-    return ta.dump_json(races)
+    public_races_data = [await PublicRaceData.from_race_data(race_data, users_namespace.get_user) for race_data in races]
+    print(public_races_data)
+    ta = TypeAdapter(list[PublicRaceData])
+    return ta.dump_json(public_races_data)
 
 async def get_user_info(steam_id: str) -> SteamUserData:
     async with httpx.AsyncClient() as client:

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Awaitable, Callable, Optional, Self
 from pydantic import BaseModel, Field, computed_field
 
 from app.race_results.models import Results
@@ -8,6 +8,23 @@ class RaceRegistration(BaseModel):
     car_class: str
     car: str
     race_number: int
+
+class PublicRaceRegistration(BaseModel):
+    steamid: str
+    name: str
+    surname: str
+    car_class: str
+    car: str
+    race_number: int
+
+    @classmethod
+    async def from_race_registration(cls, race_registration: RaceRegistration, get_user: Callable[[str], Awaitable['User']]) -> Self:
+        user = await get_user(race_registration.steamid)
+        return PublicRaceRegistration(
+            **race_registration.model_dump(),
+            name=user.name,
+            surname=user.surname,
+        )
 
 class RaceData(BaseModel):
     id: str
@@ -27,6 +44,7 @@ class RaceData(BaseModel):
             result[registration.car_class] += 1
         return result
 
+
 class RaceDataOverwrite(BaseModel):
     id: str
     title: Optional[str] = None
@@ -37,6 +55,30 @@ class RaceDataOverwrite(BaseModel):
     car_classes: Optional[dict[str, 'CarClass']] = None
     registrations: Optional[dict[str, 'RaceRegistration']] = None
     results: Optional[Results] = None
+
+class PublicRaceData(BaseModel):
+    id: str
+    title: str
+    description: str
+    date: str
+    image_url: str
+    race_finished: bool = Field(default=False)
+    car_classes: dict[str, 'CarClass']
+    registrations: dict[str, 'PublicRaceRegistration'] = Field(default_factory=lambda: {})
+    results: Optional[Results] = Field(default=None)
+
+    @computed_field
+    def classes_registrations_count(self) -> dict[str, int]:
+        result = {car_class.class_name:0 for car_class in self.car_classes.values()}
+        for registration in self.registrations.values():
+            result[registration.car_class] += 1
+        return result
+    
+    @classmethod
+    async def from_race_data(cls, race_data: RaceData, get_user: Callable[[str], Awaitable['User']]) -> Self:
+        public_race_data = PublicRaceData(**race_data.model_dump(exclude={'registrations'}))
+        public_race_data.registrations = {registration.steamid : await PublicRaceRegistration.from_race_registration(registration, get_user) for registration in race_data.registrations.values()}
+        return public_race_data
 
 class SteamUserData(BaseModel):
     steamid: str

@@ -52,6 +52,8 @@ export type Registration = {
   car_class: string;
   car: string;
   race_number: number;
+  name: string;
+  surname: string;
 }
 
 export type User = {

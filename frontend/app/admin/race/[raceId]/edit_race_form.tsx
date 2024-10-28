@@ -113,14 +113,10 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
   };
 
   const handleEntryListGeneration = async (): Promise<string> => {
-    console.log('started generation');
     try {
       const response = await fetch(generate_entry_list_url + prop.race.id);
-      console.log(response.statusText);
-      console.log(response);
       if (response.ok) {
         const data = await response.text();
-        console.log(data);
         setEntryListError(undefined);
         return data.substring(1, data.length-1).replace(/\\"/g, '"').replace(/\\n/g, '\n');;
       } else {
@@ -245,7 +241,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
       (
       <div className="mb-4">
         <label htmlFor="file" className="block text-sm font-medium text-gray-700">
-          Загрузите файл классов
+          Загрузите файл результатов
         </label>
         <input
           type="file"

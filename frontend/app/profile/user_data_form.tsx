@@ -12,6 +12,13 @@ const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
   const [successMessage, setSuccessMessage] = useState('');
   const router = useRouter();
 
+  const not_latin_regexp = /[^a-z]/gi;
+
+  const validateThen = async (validate_value: string, afterValidate: (arg: string)=>void) => {
+    const result = validate_value.replace(not_latin_regexp, '');
+
+    afterValidate(result);
+  }
   // Валидация и отправка данных
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +32,12 @@ const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
 
     if (firstName.length > 50 || lastName.length > 50) {
       setErrorMessage('Имя и Фамилия не могут быть длиннее 50 символов.');
+      setSuccessMessage('');
+      return;
+    }
+
+    if (firstName.search(not_latin_regexp) != -1 || lastName.search(not_latin_regexp) != -1) {
+      setErrorMessage('Имя и Фамилия должны быть на латинице (Ivan Ivanov).');
       setSuccessMessage('');
       return;
     }
@@ -67,9 +80,9 @@ const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
               type="text"
               id="firstName"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => validateThen(e.target.value, setFirstName)}
               className="mt-1 p-2 w-full border border-gray-700 rounded bg-gray-900"
-              placeholder="Введите ваше имя"
+              placeholder="Ivan"
               maxLength={50}
             />
           </div>
@@ -82,9 +95,9 @@ const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
               type="text"
               id="lastName"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => validateThen(e.target.value, setLastName)}
               className="mt-1 p-2 w-full border border-gray-700 rounded bg-gray-900"
-              placeholder="Введите вашу фамилию"
+              placeholder="Ivanov"
               maxLength={50}
             />
           </div>
