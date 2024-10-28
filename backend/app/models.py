@@ -20,6 +20,8 @@ class PublicRaceRegistration(BaseModel):
     @classmethod
     async def from_race_registration(cls, race_registration: RaceRegistration, get_user: Callable[[str], Awaitable['User']]) -> Self:
         user = await get_user(race_registration.steamid)
+        print(user.name)
+        print(user.surname)
         return PublicRaceRegistration(
             **race_registration.model_dump(),
             name=user.name,
@@ -91,11 +93,11 @@ class SteamUserData(BaseModel):
     avatarmedium: str
     avatarfull: str
     avatarhash: str
-    lastlogoff: int
-    personastate: int
-    primaryclanid: str
-    timecreated: int
-    personastateflags: int
+    lastlogoff: Optional[int]
+    personastate: Optional[int]
+    primaryclanid: Optional[str]
+    timecreated: Optional[int]
+    personastateflags: Optional[int]
 
 class User(BaseModel):
     steamid: str

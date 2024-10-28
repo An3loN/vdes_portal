@@ -7,8 +7,8 @@ class UsersNameSpace(AsyncRedisNameSpace):
         super().__init__(url, namespace)
     
     async def get_user(self, user_id) -> User:
-        race_dict: dict[str, Any] = await self.hgetall(user_id)
-        return User(**race_dict)
+        user_dict: dict[str, Any] = await self.hgetall(user_id)
+        return User(**user_dict)
 
     async def get_users(self) -> list[User]:
         all_races:list[dict[str, Any]] = await self.all_hgetall()
