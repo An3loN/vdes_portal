@@ -46,18 +46,9 @@ async def refresh_user(steam_id: str):
     user.steam_name = user_info.personaname
     await users_namespace.save_user(user)
 
-@app.get('/api/clear_races')
-async def clear_users():
-    await races_namespace.delete_by_pattern()
-
-@app.get('/api/clear_users')
-async def clear_users():
-    await users_namespace.delete_by_pattern()
-
-@app.get('/api/log_users')
-async def log_users():
-    ta = TypeAdapter(list[RaceData])
-    return ta.dump_json(await users_namespace.get_users())
+@app.get('/api/user_info/{user_id}')
+async def get_user_info_public(user_id: str):
+    return (await get_user_info(user_id)).model_dump_json()
 
 @app.get('/api/auth/steam/')
 async def steam_login(initial_url: str = '/'):
