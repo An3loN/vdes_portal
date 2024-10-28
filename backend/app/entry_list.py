@@ -2,7 +2,7 @@ from typing import Any, Callable, Coroutine, Self
 from pydantic import BaseModel
 from app.models import RaceData, RaceRegistration, User
 from app.redis_interface.users_namespace import UsersNameSpace
-from app.cars import cars_ids
+from app.cars import car_ids
 
 class Driver(BaseModel):
     driverCategory: int = 0
@@ -37,7 +37,7 @@ class Entry(BaseModel):
     async def generate(self, registration: RaceRegistration, get_user: Callable[[str], Coroutine[Any, Any, User]]) -> Self:
         return Entry(
             raceNumber=registration.race_number,
-            forcedCarModel=cars_ids[registration.car],
+            forcedCarModel=car_ids[registration.car],
             drivers=[Driver.generate(await get_user(registration.steamid))]
         )
 

@@ -20,6 +20,7 @@ from app.redis_interface.users_namespace import UsersNameSpace
 import cryptocode
 
 from app.entry_list import EntryList
+from app.race_results.models import Results, ResultsInput
 
 REFRESH_STEAM_DATA_SEDONDS = 3600 * 24
 STEAM_LOGIN_COOKIE_AGE = 31536000
@@ -147,6 +148,7 @@ async def edit_race(
     dateTime: str = Form(...),
     image: Optional[UploadFile] = File(None),
     race_finished: str = Form(...),
+    results_json: Optional[UploadFile] = File(None),
     login: str | None = Cookie(None),
 ):
     admin_assert(login)
@@ -165,6 +167,11 @@ async def edit_race(
 
         race_data_overwrite.image_url = RACE_IMAGES_PATH + filename
     
+    if results_json:
+        data = await results_json.read()
+        results_input = ResultsInput.model_validate_json(data)
+        race_data_overwrite.results = Results.from_result_input(results_input)
+    
     await races_namespace.edit_race(race_data_overwrite)
 
     return {
@@ -177,7 +184,10 @@ async def delete_race(
     login: str | None = Cookie(None),
 ):
     admin_assert(login)
-    race_id = request.get('raceId')
+    data = await request.json()
+    race_id = data.get('raceId')
+    if not race_id:
+        raise HTTPException(400, detail='Гонка не найдена')
     delete_images_for_race(race_id)
     await races_namespace.delete_race(race_id)
 
@@ -295,6 +305,16 @@ async def validate_class_json(class_json: UploadFile = File(...)):
     try:
         ta.validate_json(class_json.file.read())
     except Exception as e:
+        return json.dumps({'is_valid': False})
+    return json.dumps({'is_valid': True})
+
+@app.post("/api/admin/validate_results_file")
+async def validate_results_json(results_json: UploadFile = File(...)):
+    data = await results_json.read()
+    try:
+        ResultsInput.model_validate_json(data)
+    except Exception as e:
+        print(e)
         return json.dumps({'is_valid': False})
     return json.dumps({'is_valid': True})
 

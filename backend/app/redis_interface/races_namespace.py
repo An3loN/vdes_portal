@@ -23,4 +23,4 @@ class RacesNameSpace(AsyncRedisNameSpace):
             await self.hset(race_data_overwrite.id, field, value)
     
     async def delete_race(self, race_id: str):
-        await self.delete(self.make_key(race_id))
+        await self.delete(race_id)

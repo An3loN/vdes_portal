@@ -9,6 +9,24 @@ export type CarClass = {
   capacity: number;
   cars: string[];
 }
+
+export type ResultRow = {
+  user: {
+    steamid: string;
+    name: string;
+    surname: string;
+  };
+  race_number: number;
+  car_class: string;
+  car: string;
+  lap_count: number;
+  best_lap: number;
+  place: number;
+}
+
+export type Results = {
+  rows: Record<string, ResultRow>;
+}
   
 export type Race = {
   id: string;
@@ -20,6 +38,7 @@ export type Race = {
   car_classes: Record<string, CarClass>;
   registrations: Record<string, Registration>;
   classes_registrations_count: Record<string, number>;
+  results?: Results
 }
 
 export type ParsedRace = Race & {

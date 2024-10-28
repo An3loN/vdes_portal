@@ -7,7 +7,9 @@ import { TrashIcon } from '@heroicons/react/20/solid';
 import CopyButton from '@/components/copy_button';
 
 const edit_url = `/api/admin/race/edit`;
+const delete_url = '/api/admin/race/delete'
 const generate_entry_list_url = '/api/admin/race/entry_list/'
+const validate_results_url = '/api/admin/validate_results_file'
 
 type Prop = {
   race: Race
@@ -19,6 +21,8 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
   const [dateTime, setDateTime] = useState(unixToInput(prop.race.date));
   const [image, setImage] = useState<File | null>(null);
   const [race_finished, setState] = useState<boolean>(prop.race.race_finished);
+  const [resultsFile, setResultsFile] = useState<File | null>(null); // Новое поле для загрузки файла
+  const [resultsFileError, setResultsFileError] = useState<string>(''); // Ошибка валидации файла
 
   const [entryListError, setEntryListError] = useState<string | undefined>('');
 
@@ -33,7 +37,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
 
   const handleDelete = async () => {
     try {
-      await fetch(edit_url, {
+      await fetch(delete_url, {
         method: 'POST',
         body: JSON.stringify({
           'raceId': prop.race.id,
@@ -43,7 +47,36 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
       console.error('Произошла ошибка:', error);
       return;
     }
-    redirect('/admin/')
+    router.push('/admin')
+  };
+
+  // Обработчик для выбора файла
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const selectedFile = event.target.files[0];
+      setResultsFile(selectedFile);
+
+      // Валидация файла на сервере
+      const formData = new FormData();
+      formData.append('results_json', selectedFile);
+
+      try {
+        const response = await fetch(validate_results_url, {
+          method: 'POST',
+          body: formData,
+        });
+        const result = JSON.parse(await response.json()) as {is_valid?: boolean};
+        console.log(result);
+
+        if (result.is_valid) {
+          setResultsFileError('');
+        } else {
+          setResultsFileError('Файл не прошёл валидацию');
+        }
+      } catch {
+        setResultsFileError('Произошла ошибка при валидации файла');
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,10 +88,12 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
     formData.append('description', description);
     formData.append('dateTime', inputToUnix(dateTime).toString());
     if(image){  
-      console.log('appended image ', image.name);
       formData.append('image', image);
     }
     formData.append('race_finished', race_finished.toString());
+    if(resultsFile) {
+      formData.append('results_json', resultsFile);
+    }
     try {
       const response = await fetch(edit_url, {
         method: 'POST',
@@ -113,6 +148,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
         <button
             className="py-2 px-4 bg-red-600 text-white font-semibold rounded-md shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 ml-auto"
             onClick={handleDelete}
+            type="button"
         >
             <TrashIcon className='w-5 h-5'/>
         </button>
@@ -203,6 +239,25 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
           <label htmlFor="finished" className="ml-2">Завершена</label>
         </div>
       </div>
+
+      {/* Поле для загрузки файла результатов */}
+      {race_finished && 
+      (
+      <div className="mb-4">
+        <label htmlFor="file" className="block text-sm font-medium text-gray-700">
+          Загрузите файл классов
+        </label>
+        <input
+          type="file"
+          id="file"
+          accept=".json"
+          onChange={handleFileChange}
+          className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+        />
+        {/* Сообщение об ошибке валидации */}
+        {resultsFileError && <p className="text-red-500 mt-2 text-sm">{resultsFileError}</p>}
+      </div>
+      )}
 
       <button
           type="submit"

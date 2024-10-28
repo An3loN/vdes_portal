@@ -1,4 +1,4 @@
-cars_ids = {
+car_ids = {
   "Aston Martin V8": 20,
   "Audi R8 LMS Evo II": 31,
   "Bentley Continental GT3 2018": 8,
@@ -14,3 +14,5 @@ cars_ids = {
   "Lexus RC F GT3": 15,
   "Ford Mustang GT3": 36
 }
+
+car_names = {value: key for key, value in car_ids.items()}

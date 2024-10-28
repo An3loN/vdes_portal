@@ -14,7 +14,7 @@ const get_race_url = 'http://backend:8000/api/race/get/';
 type ResponseData = Race
 
 export default async function Page({ params }: { params: { raceId: string } }) {
-  let parced_race;
+  let parsed_race;
   const user_auth = await get_user_auth();
   try {
       const response = await axios.get(get_race_url + params.raceId, { withCredentials: true });
@@ -22,11 +22,12 @@ export default async function Page({ params }: { params: { raceId: string } }) {
       if(!race) {
           throw PageNotFoundError;
       }
-      parced_race = parseRace(race, user_auth.steamid);
+      parsed_race = parseRace(race, user_auth.steamid);
+      console.log('Results: ', parsed_race.results);
   } catch (error) {
       console.error('Ошибка при получении списка гонок:', error);
   } finally {
-      if(!parced_race) {
+      if(!parsed_race) {
           redirect('/')
       }
   }
@@ -36,7 +37,7 @@ export default async function Page({ params }: { params: { raceId: string } }) {
       <div className="mx-auto container">
         <ReturnLink/>
       </div>
-      <RacePage race={parced_race} user_auth={user_auth}/>
+      <RacePage race={parsed_race} user_auth={user_auth}/>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 from typing import Optional
 from pydantic import BaseModel, Field, computed_field
 
+from app.race_results.models import Results
+
 class RaceRegistration(BaseModel):
     steamid: str
     car_class: str
@@ -16,6 +18,7 @@ class RaceData(BaseModel):
     race_finished: bool = Field(default=False)
     car_classes: dict[str, 'CarClass']
     registrations: dict[str, 'RaceRegistration'] = Field(default_factory=lambda: {})
+    results: Optional[Results] = Field(default=None)
 
     @computed_field
     def classes_registrations_count(self) -> dict[str, int]:
@@ -33,7 +36,7 @@ class RaceDataOverwrite(BaseModel):
     race_finished: Optional[bool] = None
     car_classes: Optional[dict[str, 'CarClass']] = None
     registrations: Optional[dict[str, 'RaceRegistration']] = None
-   
+    results: Optional[Results] = None
 
 class SteamUserData(BaseModel):
     steamid: str
