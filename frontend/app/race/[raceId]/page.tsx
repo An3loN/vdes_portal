@@ -23,7 +23,6 @@ export default async function Page({ params }: { params: { raceId: string } }) {
           throw PageNotFoundError;
       }
       parsed_race = parseRace(race, user_auth.steamid);
-      console.log('Results: ', parsed_race.results);
   } catch (error) {
       console.error('Ошибка при получении списка гонок:', error);
   } finally {

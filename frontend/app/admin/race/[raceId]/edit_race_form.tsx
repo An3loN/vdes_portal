@@ -66,7 +66,6 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
           body: formData,
         });
         const result = JSON.parse(await response.json()) as {is_valid?: boolean};
-        console.log(result);
 
         if (result.is_valid) {
           setResultsFileError('');
