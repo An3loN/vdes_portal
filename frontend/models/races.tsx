@@ -81,10 +81,10 @@ export const WEATHER_LABELS = {
 }
 
 export const WEATHER_ICONS_PATHS = {
-  'sunny': 'media/icons/weather-sunny.svg',
-  'cloudy': 'media/icons/weather-clody.svg',
-  'rainy': 'media/icons/weather-rainy.svg',
-  'heavy_rain': 'media/icons/weather-heavy_rain.svg',
+  'sunny': '/media/icons/weather-sunny.svg',
+  'cloudy': '/media/icons/weather-clody.svg',
+  'rainy': '/media/icons/weather-rainy.svg',
+  'heavy_rain': '/media/icons/weather-heavy_rain.svg',
 }
 
 export function parseRace(race: Race, user_id: string | undefined) : ParsedRace {

@@ -9,6 +9,7 @@ import { RaceResults } from "./results";
 import { RaceDrivers } from "./drivers";
 import { AdminRaceDrivers } from "./admin_drivers";
 import { useRouter } from "next/navigation";
+import WeatherSummary from "@/components/weather_summary";
 
 const race_register_url = '/api/race/register';
 const delete_registration_url = '/api/race/delete_registration/';
@@ -175,6 +176,11 @@ interface RacePageProps {
               <img src={race.image_url}
                 alt={race.title}
                 className="rounded-lg mr-4 object-cover"/>
+            </div>
+
+            <div className="color-panel p-4 rounded-lg">
+              <label className="block secondory-text-color mb-2"> ПОГОДНЫЕ УСЛОВИЯ </label>
+              <WeatherSummary weather={race.weather} air_temperature={race.air_temperature} track_temperature={race.track_temperature}/>
             </div>
   
             {/* Доступные машины */}
