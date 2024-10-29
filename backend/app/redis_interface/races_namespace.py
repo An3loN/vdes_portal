@@ -4,7 +4,7 @@ from app.models import RaceData, RaceDataOverwrite
 
 class RacesNameSpace(AsyncRedisNameSpace):
     def __init__(self, url: str, namespace: str):
-        super().__init__(url, namespace)
+        super().__init__(url, namespace, db=0)
     
     async def get_race(self, race_id) -> RaceData:
         race_dict: dict[str, Any] = await self.hgetall(race_id)
@@ -24,3 +24,6 @@ class RacesNameSpace(AsyncRedisNameSpace):
     
     async def delete_race(self, race_id: str):
         await self.delete(race_id)
+
+    async def has_race(self, race_id: str):
+        return bytes(self.make_key(race_id), encoding='utf-8') in await self.all_keys()

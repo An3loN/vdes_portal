@@ -25,6 +25,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
   const [resultsFileError, setResultsFileError] = useState<string>(''); // Ошибка валидации файла
 
   const [entryListError, setEntryListError] = useState<string | undefined>('');
+  const [submitError, setSubmitError] = useState<string | undefined>('');
 
   const router = useRouter();
 
@@ -81,6 +82,13 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    try {
+      unixToInput(inputToUnix(dateTime).toString());
+    } catch(error) {
+      setSubmitError('Время указано неверно.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('race_id', prop.race.id);
     formData.append('title', title);
@@ -105,9 +113,13 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
         router.push('/admin')
       } else {
         console.error('Ошибка при отправке данных');
+        setSubmitError('Ошибка. Статус ' + response.status.toString());
       }
     } catch (error) {
       console.error('Произошла ошибка:', error);
+      if(error) {
+        setSubmitError(error.toString());
+      }
     }
   };
 
@@ -253,6 +265,8 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
         {resultsFileError && <p className="text-red-500 mt-2 text-sm">{resultsFileError}</p>}
       </div>
       )}
+
+      {submitError && <p className="text-red-500 mt-2 text-sm">{submitError}</p>}   
 
       <button
           type="submit"

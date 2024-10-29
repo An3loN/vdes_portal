@@ -9,6 +9,7 @@ import { RaceResults } from "./results";
 import { RaceDrivers } from "./drivers";
 
 const race_register_url = '/api/race/register';
+const race_delete_url = '/api/race/delete_registration/';
 
 interface RacePageProps {
     race: ParsedRace;
@@ -58,11 +59,29 @@ interface RacePageProps {
       }
       return true;
     }
+
+    const handleRegistrationDelete = async (): Promise<boolean> => {
+      try {
+        const response = await fetch(race_delete_url + race.id, {
+          method: 'DELETE',
+        });
+        if(response.status != 200) {
+          return false
+        } 
+        const result = await response.json() as {message?: string};
+        console.log(result.message);
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+      return true;
+    }
   
     return (
       <div className="p-4">
         {isModalOpen && (<ModalForm
           handleSubmit={handleRegistrationSubmit}
+          handleDelete={handleRegistrationDelete}
           closeModal={closeModal}
           reserved_numbers={get_reserved_numbers(race)}
           allowed_classes={get_allowed_classes(race)}

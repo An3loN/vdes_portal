@@ -83,7 +83,7 @@ export const RaceDescription: React.FC<{race: ParsedRace, user_auth: UserAuth, t
                           <button onClick={toggleModal} className="border border-green-500 text-green-500 py-2 px-4 rounded-md hover:bg-green-500 hover:text-black transition ml-2 mr-2">Зарегистрироваться</button>
                         )
                       ) : (
-                        <p className="secondory-text-color font-semibold h-fit self-center"> Заполните данные в профиле для регистрации </p>
+                        <p className="text-red-700 font-semibold h-fit self-center"> Заполните данные в профиле для регистрации </p>
                       )
                     )
                   } 

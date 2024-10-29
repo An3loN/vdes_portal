@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { inputToUnix } from '@/utils/date_formats';
+import { inputToUnix, unixToInput } from '@/utils/date_formats';
 
 const create_url = `/api/admin/race/create`;
 const validate_file_url = `/api/validate_class_json`;
@@ -13,6 +13,7 @@ const RaceInputForm: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [file, setFile] = useState<File | null>(null); // Новое поле для загрузки файла
   const [fileError, setFileError] = useState<string>(''); // Ошибка валидации файла
+  const [submitError, setSubmitError] = useState<string | undefined>('');
   const router = useRouter();
 
   // Обработчик для выбора изображения
@@ -53,6 +54,14 @@ const RaceInputForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    try {
+      unixToInput(inputToUnix(dateTime).toString());
+    } catch(error) {
+      setSubmitError('Время указано неверно.');
+      return;
+    }
+
+
     if (!image) {
       alert('Выберите изображение');
       return;
@@ -81,9 +90,13 @@ const RaceInputForm: React.FC = () => {
         router.back();
       } else {
         console.error('Ошибка при отправке данных');
+        setSubmitError('Ошибка. Статус ' + response.status.toString());
       }
     } catch (error) {
       console.error('Произошла ошибка:', error);
+      if(error) {
+        setSubmitError(error.toString());
+      }
     }
   };
 
@@ -174,6 +187,8 @@ const RaceInputForm: React.FC = () => {
         {/* Сообщение об ошибке валидации */}
         {fileError && <p className="text-red-500 mt-2 text-sm">{fileError}</p>}
       </div>
+
+      {submitError && <p className="text-red-500 mt-2 text-sm">{submitError}</p>}
 
       <button
         type="submit"

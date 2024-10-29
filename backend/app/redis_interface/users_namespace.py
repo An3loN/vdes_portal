@@ -4,7 +4,7 @@ from app.models import RaceData, RaceDataOverwrite, User
 
 class UsersNameSpace(AsyncRedisNameSpace):
     def __init__(self, url: str, namespace: str):
-        super().__init__(url, namespace)
+        super().__init__(url, namespace, db=1)
     
     async def get_user(self, user_id) -> User:
         user_dict: dict[str, Any] = await self.hgetall(user_id)

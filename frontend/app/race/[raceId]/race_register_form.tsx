@@ -5,13 +5,14 @@ import React, { useState, useEffect } from 'react';
 
 interface ModalFormProps {
   handleSubmit: (selectedCar: string, raceNum: number, carClass: string) => Promise<boolean>;
+  handleDelete: () => Promise<boolean>;
   closeModal: () => void;
   reserved_numbers: number[];
   allowed_classes: CarClass[];
   active_registration?: Registration;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, closeModal, reserved_numbers, allowed_classes, active_registration }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, handleDelete, closeModal, reserved_numbers, allowed_classes, active_registration }) => {
   const [selectedClass, setSelectedClass] = useState<string>(active_registration ? active_registration.car_class:''); // Класс машины
   const [availableCars, setAvailableCars] = useState<string[]>([]); // Список машин для выбранного класса
   const [selectedCar, setSelectedCar] = useState<string>(active_registration ? active_registration.car:''); // Выбранная машина
@@ -57,11 +58,21 @@ const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, closeModal, reserve
     }
   };
 
+    // Обработка удаления регистрации
+    const handleDeleteBase = async () => {
+      const succeed = await handleDelete();
+      if(succeed){
+        closeModal();
+        router.refresh()
+      } else {
+        setErrorMessage('Ошибка удаления.');
+      }
+    };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-gray-800 border-gray-400 rounded-lg shadow-lg w-full max-w-md p-6 relative">
         <button onClick={closeModal} className="absolute top-2 right-2 text-gray-400 hover:text-gray-50">✖</button>
-
         <h2 className="text-2xl font-bold mb-4">Регистрация на гонку</h2>
 
         <form onSubmit={handleSubmitBase} className="space-y-4">
@@ -130,6 +141,9 @@ const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, closeModal, reserve
             Зарегистрироваться
           </button>
         </form>
+        {active_registration &&
+          <button onClick={handleDeleteBase} className="w-full border rounded-md p-1 mt-3 border-red-500 text-red-500 hover:text-black hover:bg-red-500 transition">Отменить регистрацию</button>
+        }
       </div>
     </div>
   );

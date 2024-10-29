@@ -5,9 +5,9 @@ from redis.asyncio import ConnectionPool, StrictRedis
 
 
 class AsyncRedisNameSpace:
-    def __init__(self, url: str, namespace: str) -> None:
+    def __init__(self, url: str, namespace: str, db: int) -> None:
         connection_pool = ConnectionPool.from_url(url)
-        self._redis = StrictRedis(connection_pool=connection_pool, decode_responses=True)
+        self._redis = StrictRedis(connection_pool=connection_pool, decode_responses=True, db=db)
         self.namespace = namespace
 
     async def get(self, key: str, as_bytes: bool = False) -> Any:

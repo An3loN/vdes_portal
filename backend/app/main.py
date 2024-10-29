@@ -38,17 +38,9 @@ users_namespace = UsersNameSpace(settings.REDIS_URL, 'users')
 
 latin_regexp = re.compile("^[a-zA-Z]+$")
 
-async def refresh_user(steam_id: str):
-    if not await users_namespace.has_user(steam_id):
-        return
-    user_info = await get_user_info(steam_id)
-    user = await users_namespace.get_user(steam_id)
-    user.steam_name = user_info.personaname
-    await users_namespace.save_user(user)
+# Main api requests
 
-@app.get('/api/user_info/{user_id}')
-async def get_user_info_public(user_id: str):
-    return (await get_user_info(user_id)).model_dump_json()
+# Login
 
 @app.get('/api/auth/steam/')
 async def steam_login(initial_url: str = '/'):
@@ -70,6 +62,10 @@ async def process(request: Request):
     response.set_cookie(key='refresh', max_age=REFRESH_STEAM_DATA_SEDONDS)
     return response
 
+@app.get('/api/user_info/{user_id}')
+async def get_user_info_public(user_id: str):
+    return (await get_user_info(user_id)).model_dump_json()
+
 @app.post("/api/user")
 async def save_user_data(request: Request, login: str | None = Cookie(None)):
     data = await request.json()
@@ -89,6 +85,77 @@ async def save_user_data(request: Request, login: str | None = Cookie(None)):
     user.surname = last_name
     await users_namespace.save_user(user)
     return {"message": "Данные успешно сохранены!"}
+
+@app.post("/api/race/register")
+async def register_racer(request: Request, login: str | None = Cookie(None)):
+    data = await request.json()
+    race_id = data.get('raceId')
+    selected_car = data.get('selectedCar')
+    race_number = data.get('raceNum')
+    car_class_name = data.get('carClass')
+
+    await authorized_assert(login)
+    steamid = cryptocode.decrypt(login, settings.CRYPTO_PASS)
+    user = await users_namespace.get_user(steamid)
+    race = await races_namespace.get_race(race_id)
+    car_class = race.car_classes[car_class_name]
+
+    # Если уже зарегестрирован, то можно поменять регистрацию
+    active_registration = race.registrations.get(steamid, None)
+    # Здесь логика для проверки, занят ли номер и есть ли место в классе
+    if not active_registration and race_number in [registration.race_number for registration in race.registrations.values()]:
+        raise HTTPException(status_code=400, detail="Номер уже занят")
+    is_changing_in_same_class = active_registration is RaceRegistration and active_registration.car_class == car_class
+    if not is_changing_in_same_class and race.classes_registrations_count[car_class.class_name] >= car_class.capacity:
+        raise HTTPException(status_code=400, detail="Мест в классе больше нет")
+
+    
+    race.registrations[steamid] = RaceRegistration(
+        steamid=steamid,
+        car_class=car_class.class_name,
+        car=selected_car,
+        race_number=race_number,
+        )
+    
+    await races_namespace.save_race(race)
+    
+    return {"message": "Регистрация успешна"}
+
+@app.delete("/api/race/delete_registration/{race_id}")
+async def delete_user_registration(race_id: str, login: str | None = Cookie(None)):
+    await authorized_assert(login)
+    if not races_namespace.has_race(race_id):
+        raise HTTPException(status_code=404, detail="Гонка не найдена")
+    steamid = cryptocode.decrypt(login, settings.CRYPTO_PASS)
+    race = await races_namespace.get_race(race_id)
+
+    if not steamid in race.registrations.keys():
+        raise HTTPException(status_code=404, detail="Регистрация не найдена")
+
+    race.registrations.pop(steamid)
+
+    await races_namespace.edit_race(RaceDataOverwrite(
+        id=race.id,
+        registrations=race.registrations,
+    ))
+        
+    return {"message": "Регистрация удалена"}
+
+@app.get("/api/race/get/{race_id}")
+async def get_race(race_id: str, login: str | None = Cookie(None)):
+    race = await races_namespace.get_race(race_id)
+    public_race = await PublicRaceData.from_race_data(race, users_namespace.get_user)
+    return public_race.model_dump_json()
+
+@app.get("/api/race/get_list")
+async def get_race_list():
+    races = await races_namespace.get_races()
+    public_races_data = [await PublicRaceData.from_race_data(race_data, users_namespace.get_user) for race_data in races]
+    print(public_races_data)
+    ta = TypeAdapter(list[PublicRaceData])
+    return ta.dump_json(public_races_data)
+
+# Admin requests
 
 @app.get("/api/admin/race/get_list")
 async def get_admin_race_list(login: str | None = Cookie(None)):
@@ -132,10 +199,6 @@ async def create_race(
         "id": race_id,
     }
 
-def delete_images_for_race(race_id: str):
-    for p in pathlib.Path(RACE_IMAGES_PATH).glob(race_id + ".*"):
-        p.unlink()
-
 @app.post("/api/admin/race/edit")
 async def edit_race(
     race_id: str = Form(...),
@@ -174,6 +237,23 @@ async def edit_race(
         "id": race_id,
     }
 
+@app.delete("/api/race/{race_id}/delete_registration/{user_id}")
+async def delete_user_registration(race_id: str, user_id: str, login: str | None = Cookie(None)):
+    admin_assert(login)
+    race = await races_namespace.get_race(race_id)
+
+    if not user_id in race.registrations.keys():
+        raise HTTPException(status_code=404, detail="Регистрация не найдена")
+
+    race.registrations.pop(user_id)
+
+    await races_namespace.edit_race(RaceDataOverwrite(
+        id=race.id,
+        registrations=race.registrations,
+    ))
+        
+    return {"message": "Регистрация удалена"}
+
 @app.post("/api/admin/race/delete")
 async def delete_race(
     request: Request,
@@ -189,72 +269,10 @@ async def delete_race(
 
     return {"message": "Гонка успешно удалена"}
 
-@app.post("/api/race/register")
-async def register_racer(request: Request, login: str | None = Cookie(None)):
-    data = await request.json()
-    race_id = data.get('raceId')
-    selected_car = data.get('selectedCar')
-    race_number = data.get('raceNum')
-    car_class_name = data.get('carClass')
-
-    await authorized_assert(login)
-    steamid = cryptocode.decrypt(login, settings.CRYPTO_PASS)
-    user = await users_namespace.get_user(steamid)
-    race = await races_namespace.get_race(race_id)
-    car_class = race.car_classes[car_class_name]
-
-    # Если уже зарегестрирован, то можно поменять регистрацию
-    active_registration = race.registrations.get(steamid, None)
-    # Здесь логика для проверки, занят ли номер и есть ли место в классе
-    if not active_registration and race_number in [registration.race_number for registration in race.registrations.values()]:
-        raise HTTPException(status_code=400, detail="Номер уже занят")
-    is_changing_in_same_class = active_registration is RaceRegistration and active_registration.car_class == car_class
-    if not is_changing_in_same_class and race.classes_registrations_count[car_class.class_name] >= car_class.capacity:
-        raise HTTPException(status_code=400, detail="Мест в классе больше нет")
-
-    
-    race.registrations[steamid] = RaceRegistration(
-        steamid=steamid,
-        car_class=car_class.class_name,
-        car=selected_car,
-        race_number=race_number,
-        )
-    
-    await races_namespace.save_race(race)
-    
-    return {"message": "Регистрация успешна"}
-
 @app.get("/api/admin/race/get/{race_id}")
 async def get_race(race_id: str, login: str | None = Cookie(None)):
     admin_assert(login)
     return (await races_namespace.get_race(race_id=race_id)).model_dump_json()
-
-@app.get("/api/race/get/{race_id}")
-async def get_race(race_id: str, login: str | None = Cookie(None)):
-    race = await races_namespace.get_race(race_id)
-    public_race = await PublicRaceData.from_race_data(race, users_namespace.get_user)
-    return public_race.model_dump_json()
-
-@app.get("/api/race/get_list")
-async def get_race_list():
-    races = await races_namespace.get_races()
-    public_races_data = [await PublicRaceData.from_race_data(race_data, users_namespace.get_user) for race_data in races]
-    print(public_races_data)
-    ta = TypeAdapter(list[PublicRaceData])
-    return ta.dump_json(public_races_data)
-
-async def get_user_info(steam_id: str) -> SteamUserData:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(STEAM_USER_INFO_URL + steam_id)
-        all_users = response.json()
-        user_info = SteamUserData(**all_users['response']['players'][0])
-        return user_info
-
-def is_user_admin(steam_id: str) -> bool:
-    return steam_id in settings.ADMINS
-
-def _is_undefined(string: str) -> bool:
-    return string == 'undefined'
 
 @app.get("/api/is_admin")
 def is_user_admin_api(login: str | None = Cookie(None), decrypt = True):
@@ -323,6 +341,23 @@ async def generate_entry_list(race_id: str, login: str | None = Cookie(None)):
     race = await races_namespace.get_race(race_id)
     return (await EntryList.generate(race, users_namespace.get_user)).model_dump_json(indent=2)
 
+async def get_user_info(steam_id: str) -> SteamUserData:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(STEAM_USER_INFO_URL + steam_id)
+        all_users = response.json()
+        user_info = SteamUserData(**all_users['response']['players'][0])
+        return user_info
+    
+def delete_images_for_race(race_id: str):
+    for p in pathlib.Path(RACE_IMAGES_PATH).glob(race_id + ".*"):
+        p.unlink()
+
+def is_user_admin(steam_id: str) -> bool:
+    return steam_id in settings.ADMINS
+
+def _is_undefined(string: str) -> bool:
+    return string == 'undefined'
+
 def admin_assert(login: str | None):
     if not login or _is_undefined(login):
         raise HTTPException(status_code=401, detail="Не авторизован")
@@ -336,3 +371,12 @@ async def authorized_assert(login: str | None):
     steamid = cryptocode.decrypt(login, settings.CRYPTO_PASS)
     if not await users_namespace.has_user(steamid):
         raise HTTPException(status_code=400, detail="Ошибка авторизации")
+
+#FIXME
+async def refresh_user(steam_id: str):
+    if not await users_namespace.has_user(steam_id):
+        return
+    user_info = await get_user_info(steam_id)
+    user = await users_namespace.get_user(steam_id)
+    user.steam_name = user_info.personaname
+    await users_namespace.save_user(user)
