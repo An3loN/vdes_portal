@@ -48,7 +48,8 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
       console.error('Произошла ошибка:', error);
       return;
     }
-    router.push('/admin')
+    router.push('/admin');
+    router.refresh();
   };
 
   // Обработчик для выбора файла
@@ -110,7 +111,8 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
       if (response.ok) {
         const data = await response.json();
         console.log('Данные успешно отправлены:', data);
-        router.push('/admin')
+        router.push('/admin');
+        router.refresh();
       } else {
         console.error('Ошибка при отправке данных');
         setSubmitError('Ошибка. Статус ' + response.status.toString());

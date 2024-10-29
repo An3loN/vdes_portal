@@ -16,8 +16,8 @@ function formatLapTime(ms: number): string {
 
 export const RaceResults: React.FC<RacePageProps> = ({ results }) => {
   return (
-    <div className="bg-gray-800 p-6 rounded-lg overflow-auto">
-      <table className="min-w-full bg-gray-800 text-left border-collapse">
+    <div className="panel-color p-6 rounded-lg overflow-auto">
+      <table className="min-w-full panel-color text-left border-collapse">
         <thead>
           <tr>
             <th className="px-4 py-2 border-b border-gray-700">Место</th>
@@ -32,7 +32,7 @@ export const RaceResults: React.FC<RacePageProps> = ({ results }) => {
         </thead>
         <tbody>
           {Object.values(results.rows).map((result, index) => (
-            <tr key={index} className="hover:bg-gray-700">
+            <tr key={index} className="button-color-hover">
               <td className="px-4 py-2 border-b border-gray-700">{result.place}</td>
               <td className="px-4 py-2 border-b border-gray-700">{result.user.name}</td>
               <td className="px-4 py-2 border-b border-gray-700">{result.user.surname}</td>

@@ -171,8 +171,8 @@ interface RacePageProps {
             </div>
   
             {/* Доступные машины */}
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <label className="block text-gray-400 mb-2">ДОСТУПНЫЕ МАШИНЫ</label>
+            <div className="color-panel p-4 rounded-lg">
+              <label className="block secondory-text-color mb-2">ДОСТУПНЫЕ МАШИНЫ</label>
               {Object.values(race.car_classes).map((car_class, index) => (
                 <ToggleableList
                 key={index}

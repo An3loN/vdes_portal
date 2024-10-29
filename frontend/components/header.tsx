@@ -26,7 +26,7 @@ const Header: React.FC<{user_auth:UserAuth}> = ({user_auth}) => {
     }
   };
   return (
-    <header className="bg-gray-900 p-4">
+    <header className="color-bg p-4">
       <div className="container mx-auto flex justify-between items-center">
         {/* Логотип */}
         <div>

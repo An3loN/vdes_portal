@@ -15,11 +15,14 @@
 } */
 
 :root {
-  --background: #111827;
+  --background: #141414;
   --foreground: #ededed;
-  --panel_color: #1f2937;
-  --panel_color_hover: #151c26;
+  --panel_color: #1b1b1b;
+  --panel_color_hover: #303c4d;
   --secondary_text_color: #909195;
+
+  --color_button: #2b2b2b;
+  --color_button_hover: #363636;
 }
 
 body {
@@ -30,6 +33,18 @@ body {
 
 .secondory-text-color {
   color: var(--secondary_text_color);
+}
+
+.color-button-hover:hover {
+  background: var(--color_button_hover);
+}
+
+.color-button {
+  background: var(--color_button);
+}
+
+.color-bg {
+  background: var(--background);
 }
 
 .color-panel {

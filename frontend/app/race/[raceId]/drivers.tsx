@@ -7,8 +7,8 @@ interface RaceDriversProps {
 
 export const RaceDrivers: React.FC<RaceDriversProps> = ({ registrations }) => {
   return (
-    <div className="bg-gray-800 p-6 rounded-lg overflow-auto">
-      <table className="min-w-full bg-gray-800 text-left border-collapse">
+    <div className="panel-color p-6 rounded-lg overflow-auto">
+      <table className="min-w-full panel-color text-left border-collapse">
         <thead>
           <tr>
             <th className="px-4 py-2 border-b border-gray-700">Имя</th>
@@ -20,7 +20,7 @@ export const RaceDrivers: React.FC<RaceDriversProps> = ({ registrations }) => {
         </thead>
         <tbody>
           {Object.values(registrations).map((registration, index) => (
-            <tr key={index} className="hover:bg-gray-700">
+            <tr key={index} className="button-color-hover">
               <td className="px-4 py-2 border-b border-gray-700">{registration.name}</td>
               <td className="px-4 py-2 border-b border-gray-700">{registration.surname}</td>
               <td className="px-4 py-2 border-b border-gray-700">{registration.race_number}</td>

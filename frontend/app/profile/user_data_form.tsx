@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { UserAuth } from '@/models/auth';
 import Cookies from 'ts-cookies'
+import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/16/solid';
 
 const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
   const [firstName, setFirstName] = useState(user_auth.name ? user_auth.name : '');
@@ -61,72 +62,70 @@ const UserProfileForm: React.FC<{ user_auth: UserAuth }> = ({user_auth}) => {
   const handleLogout = () => {
     Cookies.remove('login');
     router.push('/');
+    router.refresh();
   };
 
   return (
-    <div className="flex items-center justify-center bg-gray-900 text-white p-4">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Для участия в гонках укажите Ваши данные:
-        </h2>
+    <div className="color-panel p-6 rounded-lg shadow-lg w-full max-w-md flex flex-col">
+      {/* Кнопка "Выйти" */}
+      <button
+        onClick={handleLogout}
+        className="bg-red-500 p-1 rounded-lg hover:bg-red-600 transition self-end"
+      >
+        <ArrowRightStartOnRectangleIcon className='w-6'/>
+      </button>
+      <h2 className="text-2xl font-bold mb-4 text-center mt-2">
+        Для участия в гонках укажите Ваши данные:
+      </h2>
 
-        {/* Форма для ввода данных */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="firstName" className="block text-sm font-medium">
-              Имя
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              value={firstName}
-              onChange={(e) => validateThen(e.target.value, setFirstName)}
-              className="mt-1 p-2 w-full border border-gray-700 rounded bg-gray-900"
-              placeholder="Ivan"
-              maxLength={50}
-            />
-          </div>
+      {/* Форма для ввода данных */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="firstName" className="block text-sm font-medium">
+            Имя
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => validateThen(e.target.value, setFirstName)}
+            className="mt-1 p-2 w-full border border-gray-700 rounded color-bg"
+            placeholder="Ivan"
+            maxLength={50}
+          />
+        </div>
 
-          <div>
-            <label htmlFor="lastName" className="block text-sm font-medium">
-              Фамилия
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              value={lastName}
-              onChange={(e) => validateThen(e.target.value, setLastName)}
-              className="mt-1 p-2 w-full border border-gray-700 rounded bg-gray-900"
-              placeholder="Ivanov"
-              maxLength={50}
-            />
-          </div>
+        <div>
+          <label htmlFor="lastName" className="block text-sm font-medium">
+            Фамилия
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            value={lastName}
+            onChange={(e) => validateThen(e.target.value, setLastName)}
+            className="mt-1 p-2 w-full border border-gray-700 rounded color-bg"
+            placeholder="Ivanov"
+            maxLength={50}
+          />
+        </div>
 
-          {/* Кнопка "Сохранить" */}
-          <button
-            type="submit"
-            className="bg-green-500 py-2 px-4 w-full rounded-lg hover:bg-green-600 transition"
-          >
-            Сохранить
-          </button>
-
-          {/* Сообщения о результате */}
-          {errorMessage && (
-            <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
-          )}
-          {successMessage && (
-            <p className="text-green-500 text-sm mt-2">{successMessage}</p>
-          )}
-        </form>
-
-        {/* Кнопка "Выйти" */}
+        {/* Кнопка "Сохранить" */}
         <button
-          onClick={handleLogout}
-          className="mt-6 bg-red-500 py-2 px-4 w-full rounded-lg hover:bg-red-600 transition"
+          type="submit"
+          className="bg-green-500 py-2 px-4 w-full rounded-lg hover:bg-green-600 transition"
         >
-          Выйти
+          Сохранить
         </button>
-      </div>
+
+        {/* Сообщения о результате */}
+        {errorMessage && (
+          <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+        )}
+        {successMessage && (
+          <p className="text-green-500 text-sm mt-2">{successMessage}</p>
+        )}
+      </form>
     </div>
   );
 };

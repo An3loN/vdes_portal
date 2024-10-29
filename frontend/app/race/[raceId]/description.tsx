@@ -95,7 +95,7 @@ export const RaceDescription: React.FC<{race: ParsedRace, user_auth: UserAuth, t
 
 
           {/* Описание */}
-          <div className="bg-gray-800 p-4 rounded-lg mt-2">
+          <div className="color-panel p-4 rounded-lg mt-2">
             <p dangerouslySetInnerHTML={{__html: race.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}}></p>
           </div>
         </div>
