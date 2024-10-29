@@ -1,5 +1,5 @@
 'use client';
-import { CarClass, Registration } from '@/models/races';
+import { Car, CarClass, Registration } from '@/models/races';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
@@ -10,12 +10,13 @@ interface ModalFormProps {
   reserved_numbers: number[];
   allowed_classes: CarClass[];
   active_registration?: Registration;
+  picked_car?: Car;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, handleDelete, closeModal, reserved_numbers, allowed_classes, active_registration }) => {
-  const [selectedClass, setSelectedClass] = useState<string>(active_registration ? active_registration.car_class:''); // Класс машины
+const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, handleDelete, closeModal, reserved_numbers, allowed_classes, active_registration, picked_car }) => {
+  const [selectedClass, setSelectedClass] = useState<string>(picked_car ? picked_car.class_name : (active_registration ? active_registration.car_class:'')); // Класс машины
   const [availableCars, setAvailableCars] = useState<string[]>([]); // Список машин для выбранного класса
-  const [selectedCar, setSelectedCar] = useState<string>(active_registration ? active_registration.car:''); // Выбранная машина
+  const [selectedCar, setSelectedCar] = useState<string>(picked_car ? picked_car.name : (active_registration ? active_registration.car:'')); // Выбранная машина
   const [numericValue, setNumericValue] = useState<number | null>(active_registration ? active_registration.race_number:null); // Номер гонщика
   const [errorMessage, setErrorMessage] = useState<string>(''); // Сообщение об ошибке
   

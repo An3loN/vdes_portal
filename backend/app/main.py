@@ -10,7 +10,7 @@ from pydantic import TypeAdapter
 
 from app.config import settings
 from app.redis_interface.races_namespace import RacesNameSpace
-from app.models import CarClass, PublicRaceData, RaceData, RaceDataOverwrite, RaceRegistration, SteamUserData, User, UserAuth
+from app.models import CarClass, PublicRaceData, RaceData, RaceDataOverwrite, RaceRegistration, SteamUserData, User, UserAuth, WeatherEnum
 
 from fastapi import FastAPI, Request, HTTPException
 from starlette.responses import RedirectResponse
@@ -167,6 +167,9 @@ async def get_admin_race_list(login: str | None = Cookie(None)):
 @app.post("/api/admin/race/create")
 async def create_race(
     title: str = Form(...),
+    weather: WeatherEnum = Form(...),
+    track_temperature: int = Form(...),
+    air_temperature: int = Form(...),
     description: str = Form(...),
     dateTime: str = Form(...),
     image: UploadFile = File(None),
@@ -189,6 +192,9 @@ async def create_race(
     await races_namespace.save_race(RaceData(
         id=race_id,
         title=title,
+        weather=weather,
+        track_temperature=track_temperature,
+        air_temperature=air_temperature,
         description=description,
         date=dateTime,
         image_url=RACE_IMAGES_PATH + filename,
@@ -203,6 +209,9 @@ async def create_race(
 async def edit_race(
     race_id: str = Form(...),
     title: str = Form(...),
+    weather: WeatherEnum = Form(...),
+    track_temperature: int = Form(...),
+    air_temperature: int = Form(...),
     description: str = Form(...),
     dateTime: str = Form(...),
     image: Optional[UploadFile] = File(None),
@@ -214,6 +223,9 @@ async def edit_race(
     race_data_overwrite=RaceDataOverwrite(
         id=race_id,
         title=title,
+        weather=weather,
+        track_temperature=track_temperature,
+        air_temperature=air_temperature,
         description=description,
         date=dateTime,
         race_finished=race_finished,

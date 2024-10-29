@@ -1,7 +1,7 @@
 'use client'
-import { get_allowed_classes, get_reserved_numbers, ParsedRace } from "@/models/races";
+import { Car, CarClass, get_allowed_classes, get_reserved_numbers, ParsedRace } from "@/models/races";
 import React, { useState } from 'react';
-import ToggleableList from "./car_dropdown";
+import CarList from "./car_dropdown";
 import ModalForm from "./race_register_form";
 import { UserAuth } from "@/models/auth";
 import { RaceDescription } from "./description";
@@ -25,6 +25,7 @@ interface RacePageProps {
   
   export const RacePage: React.FC<RacePageProps> = ({ race, user_auth }) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [pickedCar, setPickedCar] = useState<Car | undefined>(undefined);
     const [activeTab, setActiveTab] = useState<'description' | 'drivers' | 'results'>('description');
 
     const router = useRouter();
@@ -101,6 +102,11 @@ interface RacePageProps {
         return;
       }
     }
+
+    const handleCarPick = (car: Car) => {
+      setPickedCar(car);
+      toggleModal();
+    }
   
     return (
       <div className="p-4">
@@ -111,6 +117,7 @@ interface RacePageProps {
           reserved_numbers={get_reserved_numbers(race)}
           allowed_classes={get_allowed_classes(race)}
           active_registration={race.user_registration}
+          picked_car={pickedCar}
           />)}
         <div className="container mx-auto flex flex-col lg:flex-row">
           {/* Левая колонка */}
@@ -174,9 +181,14 @@ interface RacePageProps {
             <div className="color-panel p-4 rounded-lg">
               <label className="block secondory-text-color mb-2">ДОСТУПНЫЕ МАШИНЫ</label>
               {Object.values(race.car_classes).map((car_class, index) => (
-                <ToggleableList
+                <CarList
+                handleCarPick={handleCarPick}
                 key={index}
-                items={car_class.cars}
+                cars={car_class.cars.map((car_name) => 
+                  ({
+                    class_name: car_class.class_name,
+                    name: car_name
+                  } as Car))}
                 label={car_class.class_name}
                 players={race.classes_registrations_count ? race.classes_registrations_count[car_class.class_name] : 0}
                 max_players={car_class.capacity}/>

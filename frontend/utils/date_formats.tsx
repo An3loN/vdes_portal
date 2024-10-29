@@ -1,5 +1,13 @@
 export const formatDate = (unixTime: string) => {
     const date = new Date(Number(unixTime) * 1000);
+    const day = date.getDate().toString().padStart(2, '0'); // День месяца с ведущим нулем
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Месяц с ведущим нулем
+  
+    // Получаем день недели
+    const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+    const dayOfWeek = daysOfWeek[date.getDay()];
+  
+    return `${day}.${month} ${dayOfWeek}`;
     return date.toLocaleDateString('ru-RU', {
         day: '2-digit',
         month: '2-digit',

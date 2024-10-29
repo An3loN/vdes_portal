@@ -31,6 +31,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.filter-foreground {
+  filter: invert(97%) sepia(48%) saturate(6139%) hue-rotate(182deg) brightness(123%) contrast(86%);
+}
+
 .secondory-text-color {
   color: var(--secondary_text_color);
 }
@@ -61,6 +65,10 @@ body {
 
 .max-w-base {
   max-width: 42rem;
+}
+
+.max-w-race-container {
+  max-width: 776px;
 }
 
 @layer utilities {

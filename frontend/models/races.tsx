@@ -4,6 +4,11 @@ export const RaceStates = {
   Finished: 'finished',
 };
 
+export type Car = {
+  class_name: string;
+  name: string;
+}
+
 export type CarClass = {
   class_name: string;
   capacity: number;
@@ -27,10 +32,15 @@ export type ResultRow = {
 export type Results = {
   rows: Record<string, ResultRow>;
 }
-  
+
+export type Weather = 'sunny' | 'cloudy' | 'rainy' | 'heavy_rain';
+
 export type Race = {
   id: string;
   title: string;
+  weather: Weather;
+  track_temperature: number;
+  air_temperature: number;
   description: string;
   date: string;
   image_url: string;
@@ -61,6 +71,20 @@ export type User = {
   steamid: string;
   name: string;
   surname: string;
+}
+
+export const WEATHER_LABELS = {
+  'sunny': 'Ясно',
+  'cloudy': 'Облачно',
+  'rainy': 'Дождь',
+  'heavy_rain': 'Ливень',
+}
+
+export const WEATHER_ICONS_PATHS = {
+  'sunny': 'media/icons/weather-sunny.svg',
+  'cloudy': 'media/icons/weather-clody.svg',
+  'rainy': 'media/icons/weather-rainy.svg',
+  'heavy_rain': 'media/icons/weather-heavy_rain.svg',
 }
 
 export function parseRace(race: Race, user_id: string | undefined) : ParsedRace {

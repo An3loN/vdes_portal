@@ -23,8 +23,9 @@ export default async function Page() {
   return (
     <div>
       <Header user_auth={user_auth}/>
-      <div className="flex flex-col min-h-screen">
-        <main className="flex-1">
+      <div className="flex flex-col items-center">
+        <h1 className="text-4xl"> Предстоящие события </h1>
+        <main className="flex items-center color-panel mt-4">
           <MainContent races={parsed_races}/>
         </main>
       </div>

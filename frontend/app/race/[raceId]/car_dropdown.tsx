@@ -1,8 +1,16 @@
+import { Car } from '@/models/races';
 import { UsersIcon } from '@heroicons/react/20/solid';
 import React, { useState } from 'react';
 
+type CarListProps = {
+  handleCarPick: (car: Car) => void;
+  cars: Car[];
+  label: string;
+  max_players: number;
+  players: number;
+}
 
-const ToggleableList: React.FC<{ items: string[], label: string, max_players: number, players: number }> = ({items, label, max_players, players}) => {
+const CarList: React.FC<CarListProps> = ({handleCarPick, cars, label, max_players, players}) => {
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
 
   // Функция для переключения видимости списка
@@ -28,9 +36,9 @@ const ToggleableList: React.FC<{ items: string[], label: string, max_players: nu
       {isListVisible && (
         <div className="mt-4 w-full max-w-md color-button rounded-md shadow-md p-4 overflow-x-hidden overflow-y-auto min-h-28 max-h-40">
           <ul>
-            {items.map((item, index) => (
-              <li key={index} className="py-2 border-b border-gray-400 color-button last:border-none text-white">
-                {item}
+            {cars.map((car, index) => (
+              <li key={index} onClick={() => handleCarPick(cars[index])} className="py-2 border-b border-gray-400 color-button color-button-hover last:border-none text-white">
+                {car.name}
               </li>
             ))}
           </ul>
@@ -40,4 +48,4 @@ const ToggleableList: React.FC<{ items: string[], label: string, max_players: nu
   );
 };
 
-export default ToggleableList;
+export default CarList;

@@ -2,12 +2,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { inputToUnix, unixToInput } from '@/utils/date_formats';
+import { Weather } from '@/models/races';
 
 const create_url = `/api/admin/race/create`;
 const validate_file_url = `/api/validate_class_json`;
 
 const RaceInputForm: React.FC = () => {
   const [title, setTitle] = useState('');
+  const [weather, setWeather] = useState<Weather>('sunny');
+  const [trackTemperature, setTrackTemperature] = useState<number>(0);
+  const [airTemperature, setAirTemperature] = useState<number>(0);
   const [description, setDescription] = useState('');
   const [dateTime, setDateTime] = useState('');
   const [image, setImage] = useState<File | null>(null);
@@ -73,6 +77,9 @@ const RaceInputForm: React.FC = () => {
 
     const formData = new FormData();
     formData.append('title', title);
+    formData.append('weather', weather);
+    formData.append('track_temperature', trackTemperature.toString());
+    formData.append('air_temperature', airTemperature.toString());
     formData.append('description', description);
     formData.append('dateTime', inputToUnix(dateTime).toString());
     formData.append('image', image);
@@ -88,6 +95,7 @@ const RaceInputForm: React.FC = () => {
         const data = await response.json();
         console.log('Данные успешно отправлены:', data);
         router.back();
+        router.refresh();
       } else {
         console.error('Ошибка при отправке данных');
         setSubmitError('Ошибка. Статус ' + response.status.toString());
@@ -114,6 +122,54 @@ const RaceInputForm: React.FC = () => {
           onChange={(e) => setTitle(e.target.value)}
           className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
           placeholder="Введите название"
+        />
+      </div>
+
+      {/* Поле для выбора погоды */}
+      <div className="mb-4">
+        <label htmlFor="weather" className="block text-sm font-medium text-gray-700">
+          Погода
+        </label>
+        <select
+          id="weather"
+          value={weather}
+          onChange={(e) => setWeather(e.currentTarget.value as Weather)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+        >
+          <option value='sunny'> Солнечно </option>
+          <option value='cloudy'> Облачно </option>
+          <option value='rainy'> Дождь </option>
+          <option value='heavy_rain'> Ливень </option>
+        </select>
+      </div>
+
+      {/* Поле для ввода температуры трека */}
+      <div className="mb-4">
+        <label htmlFor="track_temperature" className="block text-sm font-medium text-gray-700">
+          Температура трека
+        </label>
+        <input
+          id="track_temperature"
+          type="number"
+          value={trackTemperature}
+          onChange={(e) => setTrackTemperature(Number(e.target.value))}
+          className="mt-1 block w-full max-h-96 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none text-black"
+          placeholder="Введите температуру трека"
+        />
+      </div>
+
+      {/* Поле для ввода температуры воздуха */}
+      <div className="mb-4">
+        <label htmlFor="air_temperature" className="block text-sm font-medium text-gray-700">
+          Температура воздуха
+        </label>
+        <input
+          id="air_temperature"
+          type="number"
+          value={airTemperature}
+          onChange={(e) => setAirTemperature(Number(e.target.value))}
+          className="mt-1 block w-full max-h-96 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none text-black"
+          placeholder="Введите температуру воздуха"
         />
       </div>
 

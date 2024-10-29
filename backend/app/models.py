@@ -1,7 +1,14 @@
+from enum import StrEnum
 from typing import Awaitable, Callable, Optional, Self
 from pydantic import BaseModel, Field, computed_field
 
 from app.race_results.models import Results
+
+class WeatherEnum(StrEnum):
+    SUNNY = 'sunny'
+    CLOUDY = 'cloudy'
+    RAINY = 'rainy'
+    HEAVY_RAIN = 'heavy_rain'
 
 class RaceRegistration(BaseModel):
     steamid: str
@@ -31,6 +38,9 @@ class PublicRaceRegistration(BaseModel):
 class RaceData(BaseModel):
     id: str
     title: str
+    weather: WeatherEnum
+    track_temperature: int
+    air_temperature: int
     description: str
     date: str
     image_url: str
@@ -50,6 +60,9 @@ class RaceData(BaseModel):
 class RaceDataOverwrite(BaseModel):
     id: str
     title: Optional[str] = None
+    weather: Optional[WeatherEnum] = None
+    track_temperature: Optional[int] = None
+    air_temperature: Optional[int] = None
     description: Optional[str] = None
     date: Optional[str] = None
     image_url: Optional[str] = None
@@ -61,6 +74,9 @@ class RaceDataOverwrite(BaseModel):
 class PublicRaceData(BaseModel):
     id: str
     title: str
+    weather: WeatherEnum
+    track_temperature: int
+    air_temperature: int
     description: str
     date: str
     image_url: str
