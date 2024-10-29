@@ -143,7 +143,7 @@ interface RacePageProps {
             }
             {
               (activeTab == 'drivers') && (
-                user_auth.is_admin ?
+                user_auth.is_admin && !race.race_finished ?
                 <AdminRaceDrivers handleDelete={handleAdminRegistrationDelete} registrations={race.registrations} />
                 :
                 <RaceDrivers registrations={race.registrations}/>
