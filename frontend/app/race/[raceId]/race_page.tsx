@@ -1,5 +1,5 @@
 'use client'
-import { Car, CarClass, get_allowed_classes, get_reserved_numbers, ParsedRace } from "@/models/races";
+import { Car, get_allowed_classes, get_reserved_numbers, ParsedRace } from "@/models/races";
 import React, { useState } from 'react';
 import CarList from "./car_dropdown";
 import ModalForm from "./race_register_form";
