@@ -305,14 +305,15 @@ async def get_user_auth(response: Response, login: str | None = Cookie(None), re
     steam_id = cryptocode.decrypt(login, settings.CRYPTO_PASS)
     if not await users_namespace.has_user(steam_id):
         return UserAuth(is_authorized=False).model_dump_json(exclude_none=True)
-    if not refresh:
-        print('user refreshed')
-        await refresh_user(steam_id)
-        response.set_cookie('refresh', max_age=REFRESH_STEAM_DATA_SEDONDS)
+    # if not refresh:
+    #     print('user refreshed')
+    #     await refresh_user(steam_id)
+    #     response.set_cookie('refresh', max_age=REFRESH_STEAM_DATA_SEDONDS)
     user = await users_namespace.get_user(steam_id)
     return UserAuth(
         is_authorized=True,
         is_registered=user.is_registered(),
+        is_admin=is_user_admin(user.steamid),
         **user.model_dump(include={'name', 'surname', 'steam_name', 'steamid'})
         ).model_dump_json(exclude_none=True)
 

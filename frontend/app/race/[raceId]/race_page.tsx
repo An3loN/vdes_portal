@@ -7,9 +7,12 @@ import { UserAuth } from "@/models/auth";
 import { RaceDescription } from "./description";
 import { RaceResults } from "./results";
 import { RaceDrivers } from "./drivers";
+import { AdminRaceDrivers } from "./admin_drivers";
+import { useRouter } from "next/navigation";
 
 const race_register_url = '/api/race/register';
-const race_delete_url = '/api/race/delete_registration/';
+const delete_registration_url = '/api/race/delete_registration/';
+const admin_delete_registration_url = '/api/race/{race_id}/delete_registration/{user_id}';
 
 interface RacePageProps {
     race: ParsedRace;
@@ -21,9 +24,10 @@ interface RacePageProps {
   
   
   export const RacePage: React.FC<RacePageProps> = ({ race, user_auth }) => {
-
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<'description' | 'drivers' | 'results'>('description');
+
+    const router = useRouter();
 
     const handleTabChange = (tab: 'description' | 'drivers' | 'results') => {
       setActiveTab(tab);
@@ -62,7 +66,7 @@ interface RacePageProps {
 
     const handleRegistrationDelete = async (): Promise<boolean> => {
       try {
-        const response = await fetch(race_delete_url + race.id, {
+        const response = await fetch(delete_registration_url + race.id, {
           method: 'DELETE',
         });
         if(response.status != 200) {
@@ -75,6 +79,27 @@ interface RacePageProps {
         return false;
       }
       return true;
+    }
+
+    const handleAdminRegistrationDelete = async (user_id: string) => {
+      if(!confirm("Вы уверены, что хотите удалить регистрацию?")) return;
+      try {
+        let url = admin_delete_registration_url
+        url = url.replace('{race_id}', race.id);
+        url = url.replace('{user_id}', user_id);
+        const response = await fetch(url, {
+          method: 'DELETE',
+        });
+        if(response.status != 200) {
+          return;
+        } 
+        const result = await response.json() as {message?: string};
+        router.refresh()
+        console.log(result.message);
+      } catch (error) {
+        console.error(error);
+        return;
+      }
     }
   
     return (
@@ -118,6 +143,9 @@ interface RacePageProps {
             }
             {
               (activeTab == 'drivers') && (
+                user_auth.is_admin ?
+                <AdminRaceDrivers handleDelete={handleAdminRegistrationDelete} registrations={race.registrations} />
+                :
                 <RaceDrivers registrations={race.registrations}/>
               ) 
             }

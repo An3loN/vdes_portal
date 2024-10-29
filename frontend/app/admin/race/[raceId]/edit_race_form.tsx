@@ -84,7 +84,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
 
     try {
       unixToInput(inputToUnix(dateTime).toString());
-    } catch(error) {
+    } catch {
       setSubmitError('Время указано неверно.');
       return;
     }

@@ -102,6 +102,7 @@ class User(BaseModel):
 class UserAuth(BaseModel):
     is_authorized: bool
     is_registered: Optional[bool] = None
+    is_admin: Optional[bool] = None
     name: Optional[str] = None
     surname: Optional[str] = None
     steam_name: Optional[str] = None

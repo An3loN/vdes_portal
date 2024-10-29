@@ -56,7 +56,7 @@ const RaceInputForm: React.FC = () => {
 
     try {
       unixToInput(inputToUnix(dateTime).toString());
-    } catch(error) {
+    } catch {
       setSubmitError('Время указано неверно.');
       return;
     }

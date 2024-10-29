@@ -49,6 +49,7 @@ export type ParsedRace = Race & {
 }
 
 export type Registration = {
+  steamid: string;
   car_class: string;
   car: string;
   race_number: number;

@@ -60,6 +60,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, handleDelete, close
 
     // Обработка удаления регистрации
     const handleDeleteBase = async () => {
+      if(!confirm("Вы уверены, что хотите отменить регистрацию?")) return;
       const succeed = await handleDelete();
       if(succeed){
         closeModal();

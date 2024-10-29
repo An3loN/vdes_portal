@@ -62,11 +62,11 @@ export const RaceDescription: React.FC<{race: ParsedRace, user_auth: UserAuth, t
 
                 <div className="flex-grow"></div>
                   <div className="text-4xl flex space-x-2 justify-self-end mr-4">
-                    <div>{timeLeft.hours ? timeLeft.hours.toString().padStart(2, '0') : '--'}</div>
+                    <div>{(timeLeft.hours || timeLeft.hours == 0 ) ? timeLeft.hours.toString().padStart(2, '0') : '--'}</div>
                     <div>:</div>
-                    <div>{timeLeft.minutes ? timeLeft.minutes.toString().padStart(2, '0') : '--'}</div>
+                    <div>{(timeLeft.minutes || timeLeft.minutes == 0) ? timeLeft.minutes.toString().padStart(2, '0') : '--'}</div>
                     <div>:</div>
-                    <div>{timeLeft.seconds ? timeLeft.seconds.toString().padStart(2, '0') : '--'}</div>
+                    <div>{(timeLeft.seconds || timeLeft.seconds == 0) ? timeLeft.seconds.toString().padStart(2, '0') : '--'}</div>
                   </div>
                   <div className="max-w-60">
                   {
