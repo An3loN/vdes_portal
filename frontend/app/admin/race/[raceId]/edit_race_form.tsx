@@ -52,7 +52,10 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
       return;
     }
     router.push('/admin');
-    router.refresh();
+    // router.refresh();
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   // Обработчик для выбора файла
@@ -118,7 +121,10 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
         const data = await response.json();
         console.log('Данные успешно отправлены:', data);
         router.push('/admin');
-        router.refresh();
+        //router.refresh();
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } else {
         console.error('Ошибка при отправке данных');
         setSubmitError('Ошибка. Статус ' + response.status.toString());

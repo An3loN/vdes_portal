@@ -95,7 +95,10 @@ const RaceInputForm: React.FC = () => {
         const data = await response.json();
         console.log('Данные успешно отправлены:', data);
         router.back();
-        router.refresh();
+        //router.refresh();
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } else {
         console.error('Ошибка при отправке данных');
         setSubmitError('Ошибка. Статус ' + response.status.toString());

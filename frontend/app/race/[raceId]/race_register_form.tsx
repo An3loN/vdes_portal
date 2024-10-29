@@ -52,7 +52,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, handleDelete, close
       const succeed = await handleSubmit(selectedCar, numericValue, selectedClass);
       if(succeed){
         closeModal();
-        router.refresh()
+        router.refresh();
       } else {
         setErrorMessage('Ошибка регистрации.');
       }
@@ -65,7 +65,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ handleSubmit, handleDelete, close
       const succeed = await handleDelete();
       if(succeed){
         closeModal();
-        router.refresh()
+        router.refresh();
       } else {
         setErrorMessage('Ошибка удаления.');
       }
