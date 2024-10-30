@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { inputToUnix, unixToInput } from '@/utils/date_formats';
 import { Weather } from '@/models/races';
+import ReactMarkdown from 'react-markdown';
 
 const create_url = `/api/admin/race/create`;
 const validate_file_url = `/api/validate_class_json`;
@@ -190,6 +191,18 @@ const RaceInputForm: React.FC = () => {
           placeholder="Введите описание"
           style={{ minHeight: '10rem', overflowX: 'hidden', overflowY: 'auto' }}
         />
+      </div>
+
+      {/* Поле для предпросмотра описания */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Предпросмотр описания
+        </label>
+        <div
+        className="mt-1 block w-full p-2 max-h-40 overflow-y-auto border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none text-black"
+        >
+          <ReactMarkdown>{description}</ReactMarkdown>
+        </div>
       </div>
 
       {/* Поле для выбора даты и времени */}

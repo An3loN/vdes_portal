@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { inputToUnix, unixToInput } from '@/utils/date_formats';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import CopyButton from '@/components/copy_button';
+import ReactMarkdown from 'react-markdown';
 
 const edit_url = `/api/admin/race/edit`;
 const delete_url = '/api/admin/race/delete'
@@ -121,10 +122,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
         const data = await response.json();
         console.log('Данные успешно отправлены:', data);
         router.push('/admin');
-        //router.refresh();
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        router.refresh();
       } else {
         console.error('Ошибка при отправке данных');
         setSubmitError('Ошибка. Статус ' + response.status.toString());
@@ -252,6 +250,18 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
           placeholder="Введите описание"
           style={{ minHeight: '10rem', overflowX: 'hidden', overflowY: 'auto' }}
         />
+      </div>
+
+      {/* Поле для предпросмотра описания */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Предпросмотр описания
+        </label>
+        <div
+        className="mt-1 block w-full p-2 max-h-40 overflow-y-auto border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none text-black"
+        >
+          <ReactMarkdown>{description}</ReactMarkdown>
+        </div>
       </div>
 
       {/* Поле для выбора даты и времени */}

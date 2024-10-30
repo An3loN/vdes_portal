@@ -18,8 +18,8 @@ class RaceRegistration(BaseModel):
 
 class PublicRaceRegistration(BaseModel):
     steamid: str
-    name: str
-    surname: str
+    name: Optional[str] = Field(default='-')
+    surname: Optional[str] = Field(default='-')
     car_class: str
     car: str
     race_number: int

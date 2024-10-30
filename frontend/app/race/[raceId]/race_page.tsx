@@ -96,7 +96,7 @@ interface RacePageProps {
           return;
         } 
         const result = await response.json() as {message?: string};
-        router.refresh()
+        router.refresh();
         console.log(result.message);
       } catch (error) {
         console.error(error);

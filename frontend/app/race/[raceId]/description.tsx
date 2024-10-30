@@ -4,6 +4,7 @@ import { UserAuth } from "@/models/auth";
 import { ParsedRace } from "@/models/races";
 import { unixTimePassed } from "@/utils/date_formats";
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 const formatTimeLeft = (timeLeft: number) => {
     const hours = Math.floor(timeLeft / (1000 * 60 * 60));
@@ -96,7 +97,7 @@ export const RaceDescription: React.FC<{race: ParsedRace, user_auth: UserAuth, t
 
           {/* Описание */}
           <div className="color-panel p-4 rounded-lg mt-2">
-            <p dangerouslySetInnerHTML={{__html: race.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}}></p>
+            <ReactMarkdown>{race.description}</ReactMarkdown>
           </div>
         </div>
     );

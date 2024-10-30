@@ -100,6 +100,9 @@ async def register_racer(request: Request, login: str | None = Cookie(None)):
     race = await races_namespace.get_race(race_id)
     car_class = race.car_classes[car_class_name]
 
+    if not user.name or not user.surname:
+        raise HTTPException(status_code=400, detail="Не указаны имя и фамилия")
+
     # Если уже зарегестрирован, то можно поменять регистрацию
     active_registration = race.registrations.get(steamid, None)
     # Здесь логика для проверки, занят ли номер и есть ли место в классе
