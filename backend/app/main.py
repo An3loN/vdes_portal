@@ -45,7 +45,6 @@ latin_regexp = re.compile("^[a-zA-Z]+$")
 @app.get('/api/auth/steam/')
 async def steam_login(initial_url: str = '/'):
     steamLogin = SteamSignIn()
-    print(initial_url)
     return json.dumps({'redirect_url':steamLogin.ConstructURL(settings.HOST_URL + '/api/auth/steam/processlogin/?initial_url=' + initial_url)})
 
 @app.get('/api/auth/steam/processlogin/')
@@ -243,7 +242,13 @@ async def edit_race(
     
     if results_json:
         data = await results_json.read()
-        results_input = ResultsInput.model_validate_json(data)
+        try:
+            results_input = ResultsInput.model_validate_json(data)
+        except Exception as e:
+            try:
+                results_input = ResultsInput.model_validate_json(data.decode(encoding='utf-16'))
+            except Exception as e:
+                raise e
         race_data_overwrite.results = Results.from_result_input(results_input)
     
     await races_namespace.edit_race(race_data_overwrite)
@@ -347,8 +352,11 @@ async def validate_results_json(results_json: UploadFile = File(...)):
     try:
         ResultsInput.model_validate_json(data)
     except Exception as e:
-        print(e)
-        return json.dumps({'is_valid': False})
+        try:
+            ResultsInput.model_validate_json(data.decode(encoding='utf-16'))
+        except Exception as e:
+            print(e)
+            return json.dumps({'is_valid': False})
     return json.dumps({'is_valid': True})
 
 @app.get("/api/admin/race/entry_list/{race_id}")
