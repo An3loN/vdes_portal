@@ -3,7 +3,7 @@ from typing import Awaitable, Callable, Coroutine, List, Optional, Self
 from typing import Any
 from dataclasses import dataclass
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.cars import car_names
 
@@ -18,7 +18,7 @@ class Car(BaseModel):
     carGuid: int
     teamGuid: int
     drivers: List['Driver']
-    ballastKg: int
+    ballastKg: Optional[int] = Field(default=0)
 
 class CurrentDriver(BaseModel):
     firstName: str
