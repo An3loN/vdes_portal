@@ -1,5 +1,5 @@
 car_ids = {
-  "Aston Martin V8": 20,
+  "AMR V8 Vantage": 20,
   "Audi R8 LMS Evo II": 31,
   "Bentley Continental GT3 2018": 8,
   "BMW M4 GT3": 30,
@@ -12,7 +12,8 @@ car_ids = {
   "Nissan GTR Nismo GT3 2018": 6,
   "Porsche 992 GT3": 34,
   "Lexus RC F GT3": 15,
-  "Ford Mustang GT3": 36
+  "Ford Mustang GT3": 36,
+  # "Aston Martin V8": 20
 }
 
 car_names = {value: key for key, value in car_ids.items()}
