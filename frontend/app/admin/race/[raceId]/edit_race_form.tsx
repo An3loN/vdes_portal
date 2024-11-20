@@ -8,9 +8,10 @@ import CopyButton from '@/components/copy_button';
 import ReactMarkdown from 'react-markdown';
 
 const edit_url = `/api/admin/race/edit`;
-const delete_url = '/api/admin/race/delete'
-const generate_entry_list_url = '/api/admin/race/entry_list/'
-const validate_results_url = '/api/admin/validate_results_file'
+const delete_url = '/api/admin/race/delete';
+const generate_entry_list_url = '/api/admin/race/entry_list/';
+const validate_file_url = `/api/validate_class_json`;
+const validate_results_url = '/api/admin/validate_results_file';
 
 type Prop = {
   race: Race
@@ -25,6 +26,8 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
   const [dateTime, setDateTime] = useState(unixToInput(prop.race.date));
   const [image, setImage] = useState<File | null>(null);
   const [race_finished, setState] = useState<boolean>(prop.race.race_finished);
+  const [file, setFile] = useState<File | null>(null); // Новое поле для загрузки файла
+  const [fileError, setFileError] = useState<string>(''); // Ошибка валидации файла
   const [resultsFile, setResultsFile] = useState<File | null>(null); // Новое поле для загрузки файла
   const [resultsFileError, setResultsFileError] = useState<string>(''); // Ошибка валидации файла
 
@@ -61,6 +64,35 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
 
   // Обработчик для выбора файла
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const selectedFile = event.target.files[0];
+      setFile(selectedFile);
+
+      // Валидация файла на сервере
+      const formData = new FormData();
+      formData.append('class_json', selectedFile);
+
+      try {
+        const response = await fetch(validate_file_url, {
+          method: 'POST',
+          body: formData,
+        });
+        const result = JSON.parse(await response.json()) as {is_valid?: boolean};
+
+        if (result.is_valid) {
+          setFileError('');
+        } else {
+          setFileError('Файл не прошёл валидацию');
+        }
+      } catch {
+        setFileError('Произошла ошибка при валидации файла');
+      }
+    }
+  };
+
+
+  // Обработчик для выбора файла
+  const handleResultsFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const selectedFile = event.target.files[0];
       setResultsFile(selectedFile);
@@ -109,6 +141,9 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
       formData.append('image', image);
     }
     formData.append('race_finished', race_finished.toString());
+    if(file) {
+      formData.append('class_file', file);
+    }
     if(resultsFile) {
       formData.append('results_json', resultsFile);
     }
@@ -302,6 +337,23 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
           />
         </div>
       }
+
+      {/* Поле для загрузки файла */}
+      <div className="mb-4">
+        <label htmlFor="file" className="block text-sm font-medium text-gray-700">
+          Загрузите файл классов
+        </label>
+        <input
+          type="file"
+          id="file"
+          accept=".json"
+          onChange={handleFileChange}
+          className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+        />
+        {/* Сообщение об ошибке валидации */}
+        {fileError && <p className="text-red-500 mt-2 text-sm">{fileError}</p>}
+      </div>
+
       
       {/* Выбор завершённости гонки */}
       <div className="mb-4">
@@ -330,7 +382,7 @@ const EditForm: React.FC<Prop> = (prop: Prop) => {
           type="file"
           id="file"
           accept=".json"
-          onChange={handleFileChange}
+          onChange={handleResultsFileChange}
           className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
         />
         {/* Сообщение об ошибке валидации */}

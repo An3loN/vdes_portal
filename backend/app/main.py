@@ -143,6 +143,18 @@ async def delete_user_registration(race_id: str, login: str | None = Cookie(None
         
     return {"message": "Регистрация удалена"}
 
+async def _fix_names(race: RaceData):
+    for registration in race.registrations.values():
+        if registration.car == 'Mercedes-AMG GT3 2020':
+            registration.car = 'Mercedes AMG GT3 2020'
+    await races_namespace.save_race(race)
+
+@app.get("/api/race/fix/{race_id}")
+async def get_race(race_id: str, login: str | None = Cookie(None)):
+    race = await races_namespace.get_race(race_id)
+    await _fix_names(race)
+    return Response('Success')
+
 @app.get("/api/race/get/{race_id}")
 async def get_race(race_id: str, login: str | None = Cookie(None)):
     race = await races_namespace.get_race(race_id)
@@ -218,6 +230,7 @@ async def edit_race(
     dateTime: str = Form(...),
     image: Optional[UploadFile] = File(None),
     race_finished: str = Form(...),
+    class_file: UploadFile = File(None),
     results_json: Optional[UploadFile] = File(None),
     login: str | None = Cookie(None),
 ):
@@ -239,6 +252,15 @@ async def edit_race(
         open(RACE_IMAGES_PATH + filename, 'wb').write(image_content)
 
         race_data_overwrite.image_url = RACE_IMAGES_PATH + filename
+
+    if class_file:
+        ta = TypeAdapter(dict[str, CarClass])
+        try:
+            car_classes = ta.validate_json(class_file.file.read())
+            race_data_overwrite.car_classes = car_classes
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=422, detail="Хуёвый файл")
     
     if results_json:
         data = await results_json.read()
@@ -352,6 +374,7 @@ async def validate_results_json(results_json: UploadFile = File(...)):
     try:
         ResultsInput.model_validate_json(data)
     except Exception as e:
+        print(e)
         try:
             ResultsInput.model_validate_json(data.decode(encoding='utf-16'))
         except Exception as e:
